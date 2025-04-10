@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QRコードリーダー</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script
+      src="https://kit.fontawesome.com/d0a601627a.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <h1>
+      <img
+        src="https://i.ibb.co/Wv8X3LVh/1.png"
+        alt="IMG-5451"
+        width="100px"
+        height="100px"
+      />
+      クールシェア宝塚2025<br />
+      スタンプラリーカード
+    </h1>
+
+    <button id="scanQR">QRコードをスキャン <br />ここをタップ！！</button>
+    <h3>
+      ※QRコードはスポットごとに違います!<br />※スポットごとに読み取ってください!<br />※スポットIDは毎日変わります
+    </h3>
+    <h2>QRコード読み取り方法</h2>
+    <img class="qr" src="./QRコード読み取り方法.png" />
+    <p>スキャン結果: <span id="result"></span></p>
+    <form
+      id="userForm"
+      action="https://script.google.com/macros/s/AKfycbynJ-P_M9P7UBWjGmb78KF4n5Nn4qN9PuwJFU3Wzv4aVtCi4Qkce3LXeIjn-dt639pN/exec"
+      method="post"
+    >
+      <button class="button1" type="submit">ログインされていません</button>
+    </form>
+
+    <script>
+      let userId = "";
+
+      document.addEventListener("DOMContentLoaded", function () {
+        liff
+          .init({ liffId: "2007154146-5mrQAxQ1" }) // LIFF IDを設定
+          .then(() => {
+            document
+              .getElementById("scanQR")
+              .addEventListener("click", function () {
+                if (!liff.isInClient()) {
+                  alert("LINEアプリ内で開いてください");
+                  return;
+                }
+
+                liff
+                  .scanCodeV2()
+                  .then((result) => {
+                    const qrCodeData = result.value;
+                    document.getElementById("result").textContent = qrCodeData;
+
+                    if (isValidURL(qrCodeData)) {
+                      const url = new URL(qrCodeData);
+                      const spotId = url.searchParams.get("spotID");
+
+                      const form = document.getElementById("userForm");
+
+                      if (form) {
+                        const spotIdField = document.createElement("input");
+                        spotIdField.type = "hidden";
+                        spotIdField.name = "spotId";
+                        spotIdField.value = spotId;
+                        form.appendChild(spotIdField);
+
+                        const userIdField = document.createElement("input");
+                        userIdField.type = "hidden";
+                        userIdField.name = "userId";
+                        userIdField.value = userId;
+                        form.appendChild(userIdField);
+                      }
+                    } else {
+                      alert("無効なQRコードです");
+                    }
+                  })
+                  .catch((err) => {
+                    console.log("QRコードスキャンエラー", err);
+                  });
+              });
+          })
+          .catch((err) => {
+            console.error("LIFFの初期化に失敗:", err);
+          });
+      });
+
+      function isValidURL(url) {
+        try {
+          new URL(url); // URLが有効な場合、エラーなしで通過する
+          return true;
+        } catch (e) {
+          return false;
+        }
+      }
+    </script>
+
+    <script>
+      liff
+        .init({
+          liffId: "2007154146-5mrQAxQ1",
+        })
+        .then(async () => {
+          if (!liff.isLoggedIn()) {
+            liff.login();
+          } else {
+            try {
+              const profile = await liff.getProfile();
+              const userId = profile.userId;
+
+              // ボタンのテキストを変更
+              document.querySelector(".button1").textContent = "スタンプ獲得";
+            } catch (err) {
+              console.log("プロフィール取得エラー: ", err);
+            }
+          }
+        })
+        .catch((err) => {
+          console.log("LIFF初期化エラー:", err);
+        });
+    </script>
+
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+
+    <nav>
+      <ul class="menu">
+        <li>
+          <a href="https://chikarauemori.github.io/test57/" target="_self"
+            ><i class="fa-solid fa-house"></i><br /><span class="iconname"
+              >ホーム</span
+            ></a
+          >
+        </li>
+        <li>
+          <a href="https://chikarauemori.github.io/test62/" target="_self"
+            ><i class="fa-solid fa-location-dot"></i><br /><span
+              class="iconname"
+              >マップ</span
+            ></a
+          >
+        </li>
+        <li>
+          <a
+            href="
+        https://liff.line.me/2007108080-jR8JqOgX"
+            target="_self"
+            ><i class="fa-solid fa-qrcode"></i><br /><span class="iconname"
+              >QRコード</span
+            ></a
+          >
+        </li>
+        <li>
+          <a href="https://liff.line.me/2007154146-Y5jGo0G3" target="_self"
+            ><i class="fa-solid fa-circle-user"></i><br /><span class="iconname"
+              >マイページ</span
+            ></a
+          >
+        </li>
+      </ul>
+    </nav>
+
+    <style>
+      .menu {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        background: white;
+        width: 100%;
+        display: flex;
+        justify-content: space-around;
+        padding: 10px 0;
+        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .menu li {
+        display: inline-block;
+        text-align: center;
+      }
+
+      .menu a {
+        text-decoration: none;
+        color: black;
+      }
+
+      .menu a i {
+        font-size: 24px;
+      }
+
+      .menu a span {
+        display: block;
+        font-size: 12px; /* テキストサイズ */
+        margin-top: 5px;
+      }
+
+      @media (max-width: 768px) {
+        .menu {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+        }
+
+        .menu li {
+          padding: 5px;
+        }
+      }
+
+      h1 {
+        font-family: sans-serif;
+        display: flex;
+        align-items: center; /* 縦方向の中央揃え */
+        justify-content: center; /* 横方向の中央揃え */
+        text-align: center;
+        background: skyblue;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        padding-left: 10px;
+        font-size: 85%;
+      }
+
+      input {
+        font-size: 200%;
+        background: skyblue;
+        display: inline-block;
+      }
+
+      button {
+        font-size: 200%;
+        display: inline-block;
+      }
+      .information {
+        border-style: dotted;
+        display: inline-block;
+      }
+
+      .qr {
+        width: 100%;
+      }
+    </style>
+  </body>
+</html>
