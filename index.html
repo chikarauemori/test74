@@ -41,16 +41,22 @@
       let userId = "";
 
       document.addEventListener("DOMContentLoaded", function () {
-        liff
-          .init({ liffId: "2007154146-5mrQAxQ1" }) // LIFF IDを設定
-          .then(() => {
-            document
-              .getElementById("scanQR")
-              .addEventListener("click", function () {
-                if (!liff.isInClient()) {
-                  alert("LINEアプリ内で開いてください");
-                  return;
-                }
+        liff.init({ liffId: "2007154146-5mrQAxQ1" })
+    .then(() => {
+      if (!liff.isLoggedIn()) {
+        liff.login();
+      } else {
+        liff.getProfile().then((profile) => {
+          userId = profile.userId; // ← constを使わず代入だけ！
+          document.querySelector(".button1").textContent = "スタンプ獲得";
+        });
+      }
+
+      document.getElementById("scanQR").addEventListener("click", function () {
+        if (!liff.isInClient()) {
+          alert("LINEアプリ内で開いてください");
+          return;
+        }
 
                 liff
                   .scanCodeV2()
