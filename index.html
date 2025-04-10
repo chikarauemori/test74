@@ -29,34 +29,18 @@
     <h2>QRコード読み取り方法</h2>
     <img class="qr" src="./QRコード読み取り方法.png" />
     <p>スキャン結果: <span id="result"></span></p>
-    <form
-      id="userForm"
-      action="https://script.google.com/macros/s/AKfycbz5dC6tr2KigMh3SNocd-1xWKVSYZofy8UAGvp_N6aFgkj3_ltB4nEFV3m2ERQZ-UyAyg/exec"
-      method="post"
-    >
-      <button class="button1" type="submit">ログインされていません</button>
-    </form>
-
     <script>
-      let userId = "";
-
       document.addEventListener("DOMContentLoaded", function () {
-        liff.init({ liffId: "2007154146-5mrQAxQ1" })
-    .then(() => {
-      if (!liff.isLoggedIn()) {
-        liff.login();
-      } else {
-        liff.getProfile().then((profile) => {
-          userId = profile.userId; // ← constを使わず代入だけ！
-          document.querySelector(".button1").textContent = "スタンプ獲得";
-        });
-      }
-
-      document.getElementById("scanQR").addEventListener("click", function () {
-        if (!liff.isInClient()) {
-          alert("LINEアプリ内で開いてください");
-          return;
-        }
+        liff
+          .init({ liffId: "2007154146-5mrQAxQ1" }) // LIFF IDを設定
+          .then(() => {
+            document
+              .getElementById("scanQR")
+              .addEventListener("click", function () {
+                if (!liff.isInClient()) {
+                  alert("LINEアプリ内で開いてください");
+                  return;
+                }
 
                 liff
                   .scanCodeV2()
@@ -65,30 +49,13 @@
                     document.getElementById("result").textContent = qrCodeData;
 
                     if (isValidURL(qrCodeData)) {
-                      const url = new URL(qrCodeData);
-                      const spotId = url.searchParams.get("spotID");
-
-                      const form = document.getElementById("userForm");
-
-                      if (form) {
-                        const spotIdField = document.createElement("input");
-                        spotIdField.type = "hidden";
-                        spotIdField.name = "spotId";
-                        spotIdField.value = spotId;
-                        form.appendChild(spotIdField);
-
-                        const userIdField = document.createElement("input");
-                        userIdField.type = "hidden";
-                        userIdField.name = "userId";
-                        userIdField.value = userId;
-                        form.appendChild(userIdField);
-                      }
+                      window.location.href = qrCodeData;
                     } else {
                       alert("無効なQRコードです");
                     }
                   })
                   .catch((err) => {
-                    console.log("QRコードスキャンエラー", err);
+                    console.log(err);
                   });
               });
           })
@@ -105,31 +72,6 @@
           return false;
         }
       }
-    </script>
-
-    <script>
-      liff
-        .init({
-          liffId: "2007154146-5mrQAxQ1",
-        })
-        .then(async () => {
-          if (!liff.isLoggedIn()) {
-            liff.login();
-          } else {
-            try {
-              const profile = await liff.getProfile();
-              const userId = profile.userId;
-
-              // ボタンのテキストを変更
-              document.querySelector(".button1").textContent = "スタンプ獲得";
-            } catch (err) {
-              console.log("プロフィール取得エラー: ", err);
-            }
-          }
-        })
-        .catch((err) => {
-          console.log("LIFF初期化エラー:", err);
-        });
     </script>
 
     <br />
