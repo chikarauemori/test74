@@ -29,6 +29,15 @@
     <h2>QRコード読み取り方法</h2>
     <img class="qr" src="./QRコード読み取り方法.png" />
     <p>スキャン結果: <span id="result"></span></p>
+
+    <form
+      id="userForm"
+      action="https://script.google.com/macros/s/AKfycbynJ-P_M9P7UBWjGmb78KF4n5Nn4qN9PuwJFU3Wzv4aVtCi4Qkce3LXeIjn-dt639pN/exec"
+      method="post"
+    >
+      <button class="button1" type="submit">ログインされていません</button>
+    </form>
+
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         liff
@@ -49,13 +58,30 @@
                     document.getElementById("result").textContent = qrCodeData;
 
                     if (isValidURL(qrCodeData)) {
-                      window.location.href = qrCodeData;
+                      const url = new URL(qrCodeData);
+                      const spotId = url.searchParams.get("spotID");
+
+                      const form = document.getElementById("userForm");
+
+                      if (form) {
+                        const spotIdField = document.createElement("input");
+                        spotIdField.type = "hidden";
+                        spotIdField.name = "spotId";
+                        spotIdField.value = spotId;
+                        form.appendChild(spotIdField);
+
+                        const userIdField = document.createElement("input");
+                        userIdField.type = "hidden";
+                        userIdField.name = "userId";
+                        userIdField.value = userId;
+                        form.appendChild(userIdField);
+                      }
                     } else {
                       alert("無効なQRコードです");
                     }
                   })
                   .catch((err) => {
-                    console.log(err);
+                    console.log("QRコードスキャンエラー", err);
                   });
               });
           })
@@ -74,6 +100,7 @@
       }
     </script>
 
+   
     <br />
     <br />
     <br />
