@@ -32,7 +32,7 @@
 
     <form
       id="userForm"
-      action="https://script.google.com/macros/s/AKfycbynJ-P_M9P7UBWjGmb78KF4n5Nn4qN9PuwJFU3Wzv4aVtCi4Qkce3LXeIjn-dt639pN/exec"
+      action="https://script.google.com/macros/s/AKfycbz5dC6tr2KigMh3SNocd-1xWKVSYZofy8UAGvp_N6aFgkj3_ltB4nEFV3m2ERQZ-UyAyg/exec"
       method="post"
     >
       <button class="button1" type="submit">ログインされていません</button>
@@ -99,6 +99,43 @@
         }
       }
     </script>
+
+<script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+<script>
+  liff
+    .init({
+      liffId: "2007154146-5mrQAxQ1",
+    })
+    .then(async () => {
+      if (!liff.isLoggedIn()) {
+        liff.login();
+      } else {
+        try {
+          const profile = await liff.getProfile();
+          const userId = profile.userId;
+
+          // 各フォームにユーザーIDを追加
+          const form = document.getElementById(userForm);
+          if (form) {
+            const userIdField = document.createElement("input");
+            userIdField.type = "hidden";
+            userIdField.name = "userId";
+            userIdField.value = userId;
+            form.appendChild(userIdField);
+          }
+
+          // ボタンのテキストを変更
+          document.querySelector(".button1").textContent = "スタンプ獲得";
+        } catch (err) {
+          console.log("プロフィール取得エラー: ", err);
+        }
+      }
+    })
+    .catch((err) => {
+      console.log("LIFF初期化エラー:", err);
+    });
+</script>
+
 
    
     <br />
